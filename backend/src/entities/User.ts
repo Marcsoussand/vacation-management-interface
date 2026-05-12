@@ -22,6 +22,6 @@ export class User {
   @Column({ type: "int", default: 12 })
   vacationDaysBalance!: number;
 
-  @OneToMany(() => VacationRequest, (request) => request.user)
+  @OneToMany(() => VacationRequest, (request: VacationRequest) => request.user)
   vacationRequests!: VacationRequest[];
 }

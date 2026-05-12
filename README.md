@@ -4,9 +4,11 @@ A full-stack web application for managing employee vacation requests.
 Employees can submit requests; managers can review, approve, or reject them.
 
 Additional Features to requirements :
-- Editable requests when they are still pending
-- Past requests are not allowed
-- Counter of vacation days for requester and validator
+- Pending requests can be edited or cancelled
+- Requests with past start dates are not allowed
+- Remaining vacation days balance displayed for requester and validator
+- Filter on requesters allowed for validators
+- ErrorView added 
 ---
 
 ## Tech Stack
@@ -36,19 +38,20 @@ vacation-management-interface/
 │   │   ├── entities/         # TypeORM entities (User, VacationRequest)
 │   │   ├── routes/           # Express routers
 │   │   ├── seed.ts           # Database seeder
-│   │   └── index.ts          # Entry point
+│   │   ├── app.ts            # Express app (no DB init — testable)
+│   │   └── index.ts          # Entry point (DB init + listen)
 │   ├── tests/
-│   │   └── vacations.test.ts # Integration tests
+│   │   └── vacations.test.ts # Integration tests (SQLite in-memory)
 │   ├── .env.example
 │   ├── jest.config.json
 │   ├── package.json
 │   └── tsconfig.json
 ├── src/                      # Vue frontend (Vite root)
 │   ├── components/
-│   │   ├── common/           # NavBar, StatusBadge, EmptyState
-│   │   ├── requester/        # VacationForm, RequestList
+│   │   ├── common/           # AppLayout, StatusBadge, EmptyState
+│   │   ├── requester/        # VacationForm, RequestList, EditRequestModal
 │   │   └── validator/        # RequestTable, FilterBar, RejectModal
-│   ├── views/                # HomeView, RequesterView, ValidatorView
+│   ├── views/                # HomeView, RequesterView, ValidatorView, ErrorView
 │   ├── stores/               # Pinia store
 │   ├── services/             # Axios API calls
 │   ├── router/               # Vue Router
@@ -128,17 +131,20 @@ Then follow steps 2–5 above.
 
 ## Running Tests
 
-**Backend (Jest + Supertest):**
+From the project root — runs frontend (Vitest) then backend (Jest) in sequence:
 
 ```bash
-cd backend
 npm test
 ```
 
-**Frontend (Vitest):**
+Or separately:
 
 ```bash
-# from project root
+# Frontend only (Vitest + Vue Test Utils)
+npm test  # from root, stops after Vitest
+
+# Backend only (Jest + Supertest, SQLite in-memory)
+cd backend
 npm test
 ```
 
@@ -154,6 +160,7 @@ npm test
 | GET | `/api/vacations` | Get all requests (validator) |
 | GET | `/api/vacations?userId=x` | Get requests for a user |
 | GET | `/api/vacations?status=Pending` | Filter by status |
+| PATCH | `/api/vacations/:id` | Edit a pending request |
 | PATCH | `/api/vacations/:id/approve` | Approve a request |
 | PATCH | `/api/vacations/:id/reject` | Reject a request (comment required) |
 

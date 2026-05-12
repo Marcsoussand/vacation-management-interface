@@ -47,10 +47,16 @@
     <div class="ibox">
       <div class="ibox-title" style="display: flex; align-items: center; justify-content: space-between">
         <h5>All Requests</h5>
-        <FilterBar :model-value="activeFilter" @change="handleFilterChange" />
+        <div class="flex items-center gap-3">
+          <select v-model="selectedUserId" class="form-control" style="width: auto; min-width: 150px; font-size: 13px; height: 32px; padding: 0 8px">
+            <option :value="null">All employees</option>
+            <option v-for="u in requesterUsers" :key="u.id" :value="u.id">{{ u.name }}</option>
+          </select>
+          <FilterBar :model-value="activeFilter" @change="handleFilterChange" />
+        </div>
       </div>
       <div class="ibox-content" style="padding: 0">
-        <RequestTable @approve="handleApprove" @reject="openRejectModal" />
+        <RequestTable :requests="filteredRequests" @approve="handleApprove" @reject="openRejectModal" />
       </div>
     </div>
 
@@ -77,7 +83,22 @@ const store = useVacationStore();
 const activeFilter = ref<RequestStatus | "All">("All");
 const rejectTargetId = ref<number | null>(null);
 
-onMounted(() => store.loadAllRequests());
+const selectedUserId = ref<number | null>(null);
+
+onMounted(() => {
+  store.loadAllRequests();
+  if (store.users.length === 0) store.loadUsers();
+});
+
+const requesterUsers = computed(() =>
+  store.users.filter((u) => u.role === "Requester")
+);
+
+const filteredRequests = computed(() =>
+  selectedUserId.value === null
+    ? store.requests
+    : store.requests.filter((r) => r.userId === selectedUserId.value)
+);
 
 const counts = computed(() => ({
   Pending: store.requests.filter((r) => r.status === "Pending").length,

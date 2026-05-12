@@ -6,6 +6,7 @@ import {
   approveVacationRequest,
   rejectVacationRequest,
   updateVacationRequest,
+  deleteVacationRequest,
 } from "../controllers/vacationController";
 
 const router = Router();
@@ -52,5 +53,8 @@ router.patch(
   ],
   updateVacationRequest
 );
+
+// DELETE /api/vacations/:id — delete a pending request
+router.delete("/:id", deleteVacationRequest);
 
 export default router;

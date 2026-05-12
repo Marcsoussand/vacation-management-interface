@@ -36,3 +36,6 @@ export const rejectRequest = (id: number, payload: RejectRequestPayload): Promis
 
 export const updateRequest = (id: number, payload: UpdateVacationRequestPayload): Promise<VacationRequest> =>
   api.patch<VacationRequest>(`/vacations/${id}`, payload).then((r) => r.data);
+
+export const deleteRequest = (id: number): Promise<void> =>
+  api.delete(`/vacations/${id}`).then(() => undefined);
