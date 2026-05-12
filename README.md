@@ -163,6 +163,7 @@ npm test
 | PATCH | `/api/vacations/:id` | Edit a pending request |
 | PATCH | `/api/vacations/:id/approve` | Approve a request |
 | PATCH | `/api/vacations/:id/reject` | Reject a request (comment required) |
+| DELETE | `/api/vacations/:id` | Cancel a pending request |
 
 ---
 
@@ -180,4 +181,4 @@ npm test
 - No real authentication or JWT tokens — the role system is illustrative.
 - No pagination on the validator dashboard.
 - No email notifications on status change.
-- `synchronize: true` should be replaced with migrations before any production deployment.
+- `synchronize: true` for TypeORM should be replaced with migrations before any production deployment.
