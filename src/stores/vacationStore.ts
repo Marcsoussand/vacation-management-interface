@@ -9,6 +9,7 @@ import {
   approveRequest,
   rejectRequest,
   updateRequest,
+  deleteRequest,
 } from "../services/api";
 import type { CreateVacationRequestPayload, UpdateVacationRequestPayload } from "../types";
 
@@ -128,6 +129,21 @@ export const useVacationStore = defineStore("vacation", () => {
     }
   };
 
+  // Delete a pending vacation request
+  const deleteMyRequest = async (id: number) => {
+    loading.value = true;
+    error.value = null;
+    try {
+      await deleteRequest(id);
+      requests.value = requests.value.filter((r) => r.id !== id);
+    } catch {
+      error.value = "Failed to delete request";
+      throw new Error(error.value);
+    } finally {
+      loading.value = false;
+    }
+  };
+
   const setCurrentUser = (user: User) => {
     currentUser.value = user;
   };
@@ -145,6 +161,7 @@ export const useVacationStore = defineStore("vacation", () => {
     approve,
     reject,
     editRequest,
+    deleteMyRequest,
     setCurrentUser,
   };
 });

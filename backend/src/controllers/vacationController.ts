@@ -187,3 +187,26 @@ export const updateVacationRequest = async (req: Request, res: Response): Promis
     res.status(500).json({ message: "Failed to update vacation request" });
   }
 };
+
+// DELETE /api/vacations/:id — delete a pending request (requester only)
+export const deleteVacationRequest = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { id } = req.params;
+    const vacation = await requestRepository().findOne({ where: { id: Number(id) } });
+
+    if (!vacation) {
+      res.status(404).json({ message: "Vacation request not found" });
+      return;
+    }
+
+    if (vacation.status !== "Pending") {
+      res.status(409).json({ message: "Only pending requests can be deleted" });
+      return;
+    }
+
+    await requestRepository().remove(vacation);
+    res.status(204).send();
+  } catch (error) {
+    res.status(500).json({ message: "Failed to delete vacation request" });
+  }
+};

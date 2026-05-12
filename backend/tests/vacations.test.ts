@@ -4,9 +4,9 @@ import { DataSource } from "typeorm";
 import { User } from "../src/entities/User";
 import { VacationRequest } from "../src/entities/VacationRequest";
 
-// In-memory SQLite database for tests
+// In-memory SQLite database for tests — must be declared before jest.mock
 const TestDataSource = new DataSource({
-  type: "sqlite",
+  type: "better-sqlite3",
   database: ":memory:",
   dropSchema: true,
   synchronize: true,
@@ -14,24 +14,20 @@ const TestDataSource = new DataSource({
   entities: [User, VacationRequest],
 });
 
-// Dynamically import app after DB is ready
-let app: Express.Application;
+// Mock the database module at the top level so Jest hoists it before any import
+jest.mock("../src/config/database", () => ({
+  AppDataSource: TestDataSource,
+}));
+
+// Import app AFTER the mock is in place — no DB initialization triggered
+import { app } from "../src/app";
 
 beforeAll(async () => {
   await TestDataSource.initialize();
 
-  // Override the AppDataSource used by the app with the test one
-  jest.mock("../src/config/database", () => ({
-    AppDataSource: TestDataSource,
-  }));
-
-  // Import app after mocking — avoids real DB init
-  const { app: expressApp } = await import("../src/index");
-  app = expressApp;
-
   // Seed one user
   const userRepo = TestDataSource.getRepository(User);
-  await userRepo.save({ name: "Test User", role: "Requester" });
+  await userRepo.save({ name: "Test User", role: "Requester", vacationDaysBalance: 12 });
 });
 
 afterAll(async () => {

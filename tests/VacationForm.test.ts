@@ -1,11 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { mount, flushPromises } from "@vue/test-utils";
+import { mount } from "@vue/test-utils";
 import { createPinia, setActivePinia } from "pinia";
-import VacationForm from "../../src/components/requester/VacationForm.vue";
-import { useVacationStore } from "../../src/stores/vacationStore";
+import VacationForm from "../src/components/requester/VacationForm.vue";
+import { useVacationStore } from "../src/stores/vacationStore";
 
 // Mock the store's submitRequest action
-vi.mock("../../src/services/api", () => ({
+vi.mock("../src/services/api", () => ({
   createRequest: vi.fn(),
   fetchRequestsByUser: vi.fn().mockResolvedValue([]),
   fetchAllRequests: vi.fn().mockResolvedValue([]),
@@ -18,7 +18,7 @@ describe("VacationForm", () => {
   beforeEach(() => {
     setActivePinia(createPinia());
     const store = useVacationStore();
-    store.currentUser = { id: 1, name: "Alice Martin", role: "Requester" };
+    store.currentUser = { id: 1, name: "Alice Martin", role: "Requester", vacationDaysBalance: 12 };
   });
 
   it("renders the form correctly", () => {

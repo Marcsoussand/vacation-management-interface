@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import HomeView from "../views/HomeView.vue";
 import RequesterView from "../views/RequesterView.vue";
 import ValidatorView from "../views/ValidatorView.vue";
+import ErrorView from "../views/ErrorView.vue";
 import { useVacationStore } from "../stores/vacationStore";
 
 const router = createRouter({
@@ -23,6 +24,16 @@ const router = createRouter({
       name: "validator",
       component: ValidatorView,
       meta: { requiresRole: "Validator" },
+    },
+    {
+      path: "/error",
+      name: "error",
+      component: ErrorView,
+    },
+    {
+      path: "/:pathMatch(.*)*",
+      name: "not-found",
+      component: ErrorView,
     },
   ],
 });
